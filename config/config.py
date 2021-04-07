@@ -5,7 +5,7 @@ import os
 def config_parser(section, key):
     config = configparser.ConfigParser()
     try:
-        config.read(os.path.join(os.path.dirname(__file__)+"/config_files/config_prod.ini"))
+        config.read(os.path.join(os.path.dirname(__file__)+"/config_files/config.ini"))
         result = config.get(section, key)
         return result
     except config.NoOptionError:
@@ -17,7 +17,7 @@ def config_parser(section, key):
 def config_parser_section(section):
     parser = config = configparser.ConfigParser()
     try:
-        parser.read(os.path.dirname(__file__)+"/config_files/config_prod.ini")
+        parser.read(os.path.dirname(__file__)+"/config_files/config.ini")
         result = dict(parser.items(section))
         return result
     except config.NoSectionError:
