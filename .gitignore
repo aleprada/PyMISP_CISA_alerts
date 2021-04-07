@@ -1,0 +1,18 @@
+#virtualenv
+/venv
+#build
+/build
+
+#config
+/config/config_files/config_prod.ini
+
+#reports
+weblog_triage/reports/
+#pychar metadata
+.idea/
+
+.pyc
+*.pyo
+.cpython
+__pycache__/
+/test/.pytest_cache
