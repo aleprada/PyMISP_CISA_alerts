@@ -1,5 +1,7 @@
 **PyMISP CISA Alerts** 
 
+![Build Status](https://travis-ci.com/aleprada/PyMISP_CISA_alerts.svg?branch=main&status=passed)
+
 The aim of this tool is to provide a simple and automated way of gathering alerts 
 about vulnerabilities and some threats regarding ICS/SCADA. The tool uses the [feedparser](https://pypi.org/project/feedparser/)
 Python library for consuming RSS feed published by [CISA](https://us-cert.cisa.gov/ncas), 
