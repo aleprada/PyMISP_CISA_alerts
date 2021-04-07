@@ -10,7 +10,7 @@ to be aware of the vulnerabilities that you want to monitor. If any of the alert
 one or more keywords stored in the software.txt file, the alerts will be sent to the 
 configured [MISP](https://www.misp-project.org/) instance.
 
-**National Cyber Awareness System**
+**National Cyber Awareness System (NCAS)**
 
 The tool gathers information from the followings sources within the CISA NCAS.
 * **Bulletins**: Weekly summaries of new vulnerabilities (including patch information if available).
