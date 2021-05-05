@@ -19,10 +19,10 @@ def test_software_list():
 
 
 def test_get_ics_threats():
-    threats = get_ics_threats(True)
+    threats = get_ics_threats()
     assert len(threats) >= 0
 
 
 def test_get_vulnerability_reports():
-    vulns = get_vulnerability_reports(True)
+    vulns = get_vulnerability_reports()
     assert len(vulns) >= 0

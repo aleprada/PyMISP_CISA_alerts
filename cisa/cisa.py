@@ -1,6 +1,7 @@
 import feedparser
 from lxml.html import fromstring
-from config.config import get_software_list
+from config.config import get_software_list, save_threat_db, save_vuln
+from config.config import check_saved_threats, check_saved_vulns
 
 
 class CISAVulnerability:
@@ -55,91 +56,77 @@ def check_ics_threats(threat_list):
     return threat_alert
 
 
-def feed_vulnerability_reports(all_entries):
+def feed_vulnerability_reports():
     vulnerability_list = []
     rss = 'https://us-cert.cisa.gov/ncas/bulletins.xml'
     feed = feedparser.parse(rss)
-
-    if all_entries is False:
-        last_etag = feed.etag
-        last_modified = feed.modified
-        # check if new version exists
-        feed_update = feedparser.parse(rss, etag=last_etag, modified=last_modified)
-        if feed_update.status == 304:
-            print("\t[!] There aren't new vulnerability reports")
-            return vulnerability_list
-        else:
-            feed = feed_update
-
     for key in feed["entries"]:
         title = key['title']
         url = key['links'][0]['href']
+        published = key['published']
         summary = key['summary']
-        doc = fromstring(summary)
-        tr_elements = doc.xpath('//tr')
-        for j in range(1,len(tr_elements)):
-            items = tr_elements[j]
-            if len(items) != 5:
-                break
-            count = 0
-            for t in items.iterchildren():
-                data = t.text_content().strip()
-                if count == 0:
-                    vendor = data
-                elif count == 1:
-                    description = data
-                elif count ==2:
-                    published = data
-                elif count ==3:
-                    cvss = data
-                elif count == 4:
-                    info = data
-                    cisa = CISAVulnerability(vendor, description, published, cvss, info)
-                    vulnerability_list.append(cisa)
-                count = count +1
+        already_stored = check_saved_vulns(url)
+        if already_stored is False:
+            save_vuln(url, title, published)
+            doc = fromstring(summary)
+            tr_elements = doc.xpath('//tr')
+            for j in range(1, len(tr_elements)):
+                items = tr_elements[j]
+                if len(items) != 5:
+                    break
+                count = 0
+                for t in items.iterchildren():
+                    data = t.text_content().strip()
+                    if count == 0:
+                        vendor = data
+                    elif count == 1:
+                        description = data
+                    elif count == 2:
+                        published = data
+                    elif count == 3:
+                        cvss = data
+                    elif count == 4:
+                        info = data
+                        cisa = CISAVulnerability(vendor, description, published, cvss, info)
+                        vulnerability_list.append(cisa)
+                    count = count + 1
     return vulnerability_list
 
 
-def feed_ics_threats(all_entries):
+def feed_ics_threats():
     cisa_threats = []
     rss="https://us-cert.cisa.gov/ics/advisories/advisories.xml"
     feed = feedparser.parse(rss)
-    if all_entries is False:
-        last_etag = feed.etag
-        last_modified = feed.modified
-        # check if new version exists
-        feed_update = feedparser.parse(rss, etag=last_etag, modified=last_modified)
-        if feed_update.status == 304:
-            print("\t[!] There aren't new threat reports")
-            return cisa_threats
-        else:
-            feed = feed_update
-
     for key in feed["entries"]:
         title = key['title']
         summary = key['summary'].replace("<p>","").replace("<p>","")
         published = key['published']
         link = key['link']
-        threat = CISAICSThreat(title,summary, published, link)
-        cisa_threats.append(threat)
+        already_stored = check_saved_threats(link)
+        if already_stored is False:
+            save_threat_db(link, title, published)
+            threat = CISAICSThreat(title, summary, published, link)
+            cisa_threats.append(threat)
     return cisa_threats
 
 
-def get_vulnerability_reports(all_entries):
+def get_vulnerability_reports():
     products_wt_vulns = []
-    vulnerability_list = feed_vulnerability_reports(all_entries)
+    vulnerability_list = feed_vulnerability_reports()
     if vulnerability_list is not None:
         products_wt_vulns = check_vuln_products(vulnerability_list)
         for p in products_wt_vulns:
             p.show_vulnerability_info()
     return products_wt_vulns
+    return vulnerability_list
 
 
-def get_ics_threats(all_entries):
-    threats = feed_ics_threats(all_entries)
+def get_ics_threats():
+    threats = feed_ics_threats()
     if threats is not None:
         filtered_threats = check_ics_threats(threats)
         for t in filtered_threats:
             t.show_threat_info()
     return filtered_threats
+    return threats
 

@@ -1,4 +1,3 @@
-#List of software/products that you want to monitor.
 Zoho ManageEngine ADSelfService Plu
 Yeastar NeoGate TG400
 GE MU320E
