@@ -44,7 +44,7 @@ def save_vuln(vuln_list, proxies_usage):
             event = misp.add_event(event, pythonify=True)
             print("\t [*] Event with ID "+str(event.id) + " has been successfully stored.")
         except pymisp.exceptions.NewEventError as e:
-            print("[!] Exception: "+e)
+            print("[!] Exception: "+ str(e))
             print("\t[!] There was a problem creating the following event: "+vuln.description)
 
 
@@ -60,5 +60,5 @@ def save_threat(threat_list, proxies_usage):
             event = misp.add_event(event, pythonify=True)
             print("\t [*] Event with ID "+str(event.id) + " has been successfully stored.")
         except pymisp.exceptions.NewEventError as e:
-            print("[!] Exception: " + e)
+            print("[!] Exception: " + str(e))
             print("\t[!] There was a problem creating the following event: " + threat.summary)

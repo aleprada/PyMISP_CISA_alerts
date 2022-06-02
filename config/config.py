@@ -3,13 +3,12 @@ from sqlite3 import Error
 import configparser
 import sqlite3
 import os
-import sys
 
 
 def config_parser(section, key):
     config = configparser.ConfigParser()
     try:
-        config.read(os.path.join(os.path.dirname(__file__)+"/config_files/config.ini"))
+        config.read(os.path.join(os.path.dirname(__file__)+"/config_files/config_prod.ini"))
         result = config.get(section, key)
         return result
     except config.NoOptionError:
