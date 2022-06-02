@@ -1,3 +1,4 @@
+import pymisp.exceptions
 from pymisp import PyMISP,MISPEvent, MISPAttribute, PyMISPError, MISPObject
 from config.config import config_parser
 from cisa.cisa import CISAVulnerability, CISAICSThreat
@@ -30,27 +31,34 @@ def create_event(misp):
 def save_vuln(vuln_list, proxies_usage):
     misp = misp_connection(config_parser("misp","url"),config_parser("misp","api_key"),proxies_usage)
     for vuln in vuln_list:
-        event = create_event(misp)
-        event.add_tag("circl:incident-classification=\"vulnerability\"")
-        event.info = "[CISA] New vulnerability reported"
-        vulnerability_object = MISPObject('vulnerability')
-        vulnerability_object.add_attribute("created", vuln.published)
-        vulnerability_object.add_attribute("cvss-score", vuln.cvss)
-        vulnerability_object.add_attribute("id", vuln.cve_info)
-        vulnerability_object.add_attribute("description", vuln.description)
-        event.add_object(vulnerability_object)
-        event = misp.add_event(event, pythonify=True)
-        print("\t [*] Event with ID "+str(event.id) + " has been successfully stored.")
+        try:
+            event = create_event(misp)
+            event.add_tag("circl:incident-classification=\"vulnerability\"")
+            event.info = "[CISA] New vulnerability reported"
+            vulnerability_object = MISPObject('vulnerability')
+            vulnerability_object.add_attribute("created", vuln.published)
+            vulnerability_object.add_attribute("cvss-score", vuln.cvss)
+            vulnerability_object.add_attribute("id", vuln.cve_info)
+            vulnerability_object.add_attribute("description", vuln.description)
+            event.add_object(vulnerability_object)
+            event = misp.add_event(event, pythonify=True)
+            print("\t [*] Event with ID "+str(event.id) + " has been successfully stored.")
+        except pymisp.exceptions.NewEventError as e:
+            print("[!] Exception: "+e)
+            print("\t[!] There was a problem creating the following event: "+vuln.description)
 
 
 def save_threat(threat_list, proxies_usage):
     misp = misp_connection(config_parser("misp","url"),config_parser("misp","api_key"), proxies_usage)
     for threat in threat_list:
-        event = create_event(misp)
-        event.add_tag("circl:incident-classification=\"vulnerability\"")
-        event.info = "[CISA] New ICS threat detected"
-        event.add_attribute('link',threat.link)
-        event.add_attribute('comment',threat.summary)
-        event = misp.add_event(event, pythonify=True)
-        print("\t [*] Event with ID "+str(event.id) + " has been successfully stored.")
-
+        try:
+            event = create_event(misp)
+            event.add_tag("circl:incident-classification=\"vulnerability\"")
+            event.info = "[CISA] New ICS threat detected"
+            event.add_attribute('link',threat.link)
+            event.add_attribute('comment',threat.summary)
+            event = misp.add_event(event, pythonify=True)
+            print("\t [*] Event with ID "+str(event.id) + " has been successfully stored.")
+        except pymisp.exceptions.NewEventError as e:
+            print("[!] Exception: " + e)
+            print("\t[!] There was a problem creating the following event: " + threat.summary)
