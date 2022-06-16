@@ -5,6 +5,9 @@
 
 #config
 /config/config_files/config_prod.ini
+/config/config_files/software.txt
+/config/sqlite/entries.db
+
 
 #reports
 weblog_triage/reports/

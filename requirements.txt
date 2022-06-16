@@ -1,4 +1,4 @@
-lxml==4.2.1
-feedparser==5.2.1
+lxml==4.8.0
+feedparser==6.0.9
 pymisp==2.4.141.1
 pytest==6.2.3
