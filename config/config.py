@@ -8,7 +8,7 @@ import os
 def config_parser(section, key):
     config = configparser.ConfigParser()
     try:
-        config.read(os.path.join(os.path.dirname(__file__)+"/config_files/config_prod.ini"))
+        config.read(os.path.join(os.path.dirname(__file__)+"/config_files/config.ini"))
         result = config.get(section, key)
         return result
     except config.NoOptionError:
